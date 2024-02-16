@@ -567,10 +567,68 @@ FROM
     나머지 문자는 * 로 보이게 한다.
 */
 
+SELECT
+    ename,
+    CONCAT(ename, '@human.com') original_mail,
+    LPAD(SUBSTR(ename, 3, 1), 3, '*') left,
+    RPAD(
+        LPAD(
+            SUBSTR(ename, 3, 1), 3, '*'
+        ), 
+        LENGTH(ename), 
+        '*'
+    ) 이름,
+    SUBSTR('human', 2, 1) 두번째,
+    LPAD(SUBSTR('human', 2, 1), 2, '*') 두글자별표,
+    RPAD(LPAD(SUBSTR('human', 2, 1), 2, '*'), LENGTH('human'), '*') 도메인,
+    CONCAT(RPAD(LPAD(SUBSTR('human', 2, 1), 2, '*'), LENGTH('human'), '*'), '.com') 도메인주소,
+    CONCAT(
+        CONCAT(
+            LOWER(
+                RPAD(
+                    LPAD(
+                        SUBSTR(ename, 3, 1), 3, '*'
+                    ), 
+                    LENGTH(ename), 
+                    '*'
+                )
+            ),
+            '@'
+        ),
+        CONCAT(RPAD(LPAD(SUBSTR('human', 2, 1), 2, '*'), LENGTH('human'), '*'), '.com')
+    ) 메일주소
+FROM
+    emp
+;
 
-
-
-
+SELECT
+    eno, name, mail,
+    SUBSTR(mail, 3, 1) 세번째문자,
+    LPAD(SUBSTR(mail, 3, 1), 3, '*') 세글자,
+    RPAD(
+        LPAD(SUBSTR(mail, 3, 1), 3, '*'),
+        INSTR(mail, '@') - 1,
+        '*'
+    ) 이름,
+    CONCAT(
+        RPAD(
+            LPAD(SUBSTR(mail, 3, 1), 3, '*'),
+            INSTR(mail, '@') - 1,
+            '*'
+        ),
+        SUBSTR(mail, INSTR(mail, '@'), 1)
+    ) 골벵이추가,
+    SUBSTR(
+        
+    ) 도메인
+FROM
+    (
+        SELECT
+            empno eno, ename name, CONCAT(CONCAT(LOWER(ename), '@'), 'human.com') mail
+        FROM
+            emp
+    )
+;
 
 
 
