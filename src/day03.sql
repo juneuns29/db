@@ -497,7 +497,12 @@ FROM
     커미션이 없는 사원은 100에서 27% 인상된 금액으로 조회하세요.
     단, 커미션은 계산된 값에서 소수점 이상 2번째 자리에서 반올림해서 조회되게 하세요.
 */
-
+SELECT
+    ename 사원이름, sal 급여, 
+    ROUND(NVL(comm, 100) * 1.27, -2)  커미션
+FROM
+    emp
+;
 /*
     사원들의 
         사원번호, 사원이름, 지급액
@@ -506,13 +511,25 @@ FROM
     소수점 이상 첫번째 자리에서 버림한 숫자로 급여를 조회하세요.
     커미션이 없는 사원은 0으로 하고 계산해서 조회하세요.
 */
-
+SELECT
+    empno 사원번호, ename 사원이름, 
+    TRUNC(NVL(sal + comm, sal), -1) 지급액1,
+    TRUNC(sal + NVL(comm, 0), -1) 지급액2
+FROM
+    emp
+;
 /*
     사원들중 급여가 100으로 나누어 떨어지는 사원들의
         사원이름, 직급, 급여
     를 조회하세요.
 */
-
+SELECT
+    ename 사원이름, job 직급, sal 급여
+FROM
+    emp
+WHERE
+    MOD(sal, 100) = 0
+;
 -- 문자열 처리함수를 이용해서 해결하세요.
 
 --  문제 ] 'jennie@human.com' 계정의 아이디중 첫번째 문자와 세번째문자는 추출 나머지는 *로
@@ -527,17 +544,40 @@ FROM
         사원이름, 직급, 부서번호
     를 조회하세요.        
 */
-
+SELECT
+    ename 사원이름, job 직급, deptno 부서번호
+FROM
+    emp
+WHERE
+--    LENGTH(ename) <= 5
+--    ename LIKE '_____'
+--    OR ename LIKE '____'
+--    or ename LIKE '___'
+--    or ename LIKE '__'
+--    OR ename LIKE '_'
+    LENGTH(ename) IN (5, 4, 3, 2, 1)
+;
 /*
     사원들의 사원이름, 직급, 급여
     를 조회하는데 사원이름 앞에는 'Mr.'를 붙여서 조회하세요.
 */
-
+SELECT
+    CONCAT('Mr.', ename) 사원이름, job 직급, sal 급여
+FROM
+    emp
+;
 /*
     사원들중 이름이 'N'으로 끝나는 사원들의
         사원이름, 상사번호, 직급을 조회하세요.
 */
-
+SELECT
+    ename 사원이름, mgr 상사번호, job 직급
+FROM
+    emp
+WHERE
+    SUBSTR(ename, -1, 1) = 'N'
+--    ename LIKE '%N'
+;
 /*
     사원들의
         사원이름, 직급, 입사일
@@ -619,8 +659,59 @@ SELECT
         SUBSTR(mail, INSTR(mail, '@'), 1)
     ) 골벵이추가,
     SUBSTR(
-        
-    ) 도메인
+        mail, INSTR(mail, '@') + 1, INSTR(mail, '.') - INSTR(mail, '@') - 1
+    ) 도메인,
+    RPAD(
+        LPAD(
+             SUBSTR(
+                SUBSTR(
+                    mail, INSTR(mail, '@') + 1, INSTR(mail, '.') - INSTR(mail, '@') - 1
+                ),
+                2, 1
+            ),
+            2, '*'
+        ),
+        5, '*'
+    ) 도메인처리,
+    CONCAT(
+        RPAD(
+            LPAD(
+                 SUBSTR(
+                    SUBSTR(
+                        mail, INSTR(mail, '@') + 1, INSTR(mail, '.') - INSTR(mail, '@') - 1
+                    ),
+                    2, 1
+                ),
+                2, '*'
+            ),
+            5, '*'
+        ), '.com'
+    ) 도메인전체,
+    CONCAT(
+        CONCAT(
+            RPAD(
+                LPAD(SUBSTR(mail, 3, 1), 3, '*'),
+                INSTR(mail, '@') - 1,
+                '*'
+            ),
+            SUBSTR(mail, INSTR(mail, '@'), 1)
+        )
+    ,
+        CONCAT(
+            RPAD(
+                LPAD(
+                     SUBSTR(
+                        SUBSTR(
+                            mail, INSTR(mail, '@') + 1, INSTR(mail, '.') - INSTR(mail, '@') - 1
+                        ),
+                        2, 1
+                    ),
+                    2, '*'
+                ),
+                5, '*'
+            ), '.com'
+        )
+    ) 메일주소
 FROM
     (
         SELECT
