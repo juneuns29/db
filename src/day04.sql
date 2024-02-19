@@ -529,8 +529,10 @@ SELECT
                 WHEN 30 THEN sal * 1.2
                 ELSE 0
     END ºñÀÚ±Ý,
-    CASE WHEN  THEN
-        
+    CASE WHEN deptno = 10 THEN sal * 1.1
+        WHEN deptno = 20 THEN sal * 1.15
+        WHEN deptno = 30 THEN sal * 1.2
+        ELSE 0
     END ²Çµ·
 FROM
     emp
