@@ -486,3 +486,55 @@ GROUP BY
 HAVING
     deptno = deptno
 ;
+
+
+-- 사원들의 사원이름, 부서번호, 부서최대급여, 부서원수 를 조회하세요.
+SELECT
+    e.ename, e.deptno, 
+    (
+        SELECT
+            MAX(sal)
+        FROM
+            emp
+        WHERE
+            deptno = e.deptno
+    ) 부서최대급여,
+    (
+        SELECT
+            COUNT(*)
+        FROM
+            emp
+        WHERE
+            deptno = e.deptno
+    ) 부서원수
+FROM
+    emp e
+;
+
+--------------------------------------------------------------------------------
+
+-- 사원들 중 소속부서 평균급여보다 급여가 적은 사원들의 
+--    사원이름, 부서번호, 급여, 부서평균급여 를 조회하세요.
+SELECT
+    e.ename 사원이름, e.deptno 부서번호, e.sal 급여,
+    (
+        SELECT
+            TRUNC(avg(sal), 2)
+        FROM
+            emp
+        WHERE
+            deptno = e.deptno   
+    ) 부서평균급여
+FROM
+    emp e
+WHERE
+    e.sal < (
+                SELECT
+                    avg(sal)
+                FROM
+                    emp
+                WHERE
+                    deptno = e.deptno
+            )
+;
+
