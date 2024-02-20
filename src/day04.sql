@@ -598,13 +598,27 @@ FROM
     를 조회하세요.
     형변환함수를 이용해서 처리하세요.
 */
-
+SELECT
+    ename 사원이름, sal 급여
+FROM
+    emp
+WHERE
+    SUBSTR(TO_CHAR(sal), -3, 1) = '0'
+;
 /*
     사원들의
         사원이름, 급여, 커미션
     을 조회하세요.
     커미션이 없는 사원은 'None' 으로 출력되게 하세요.
 */
+
+SELECT
+    ename 사원이름, sal 급여, 
+    NVL(TO_CHAR(comm), 'None') 커미션
+FROM
+    emp
+;
+
 
 /*
     입사년도를 기준으로
