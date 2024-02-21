@@ -70,6 +70,27 @@ WHERE
 */
 
 
+SELECT
+    e.ename 사원이름, e.job 직급, e.sal 급여, s.ename 상사이름, 
+    dname 부서이름, loc 부서위치, grade 급여등급
+FROM
+    emp e, dept d, salgrade, emp s,
+    -- 전체 평균급여
+    (
+        SELECT
+            AVG(sal) avg
+        FROM
+            emp
+    )
+WHERE
+    e.mgr = s.empno(+)
+    AND e.sal BETWEEN losal AND hisal
+    AND e.deptno = d.deptno
+    AND e.sal > avg
+ORDER BY
+    grade DESC
+;
+
 --- 여기서부터 인라인 뷰를 이용해서 처리할 것.
 /*
     8. 
