@@ -68,7 +68,24 @@ WHERE
         을 조회하세요.
         단, 급여가 전체평균급여보다 많은 사원만 조회하세요.
 */
-
+SELECT
+    e.ename 사원이름, e.job 직급, e.sal 급여, s.ename 상사이름, 
+    dname 부서이름, loc 부서위치, grade 급여등급
+FROM
+    emp e, dept d, salgrade, emp s
+WHERE
+    e.mgr = s.empno(+)
+    AND e.sal BETWEEN losal AND hisal
+    AND e.deptno = d.deptno
+    AND e.sal > (
+                    SELECT
+                        AVG(sal)
+                    FROM
+                        emp
+                )
+ORDER BY
+    grade DESC
+;
 
 SELECT
     e.ename 사원이름, e.job 직급, e.sal 급여, s.ename 상사이름, 
