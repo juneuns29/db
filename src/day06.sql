@@ -178,3 +178,135 @@ WHERE
                         job = 'MANAGER'
                 )
 ;
+
+--------------------------------------------------------------------------------
+/*
+    서브질의의 결과를 테이블 처럼 사용할 수 있다.
+    이렇게 FROM 절에 포함된 서브질의를 가리켜 "인라인 뷰" 라고 부른다.
+    
+    형식 ]
+        SELECT
+            컬럼이름들...
+        FROM
+            ( 서브질의 ) [별칭]
+        ;
+        
+    참고 ]
+        인라인 뷰의 SELECT 절에 함수가 사용될때는 반드시 별칭을 부여해야 한다.
+        인라인 뷰의 SELECT 절에 별칭들이 붙여지면
+        컬럼이름은 별칭으로 고정된다.
+*/
+
+-- 부서별 부서번호, 급여합계, 평균급여, 최대급여, 최소급여, 사원수 를 
+-- 인라인 뷰를 이용해서 조회하세요.
+SELECT
+    *
+FROM
+    (
+        SELECT
+            deptno dno, SUM(sal), AVG(sal), MAX(sal), MIN(sal), COUNT(*)
+        FROM
+            emp
+        GROUP BY
+            deptno
+    )
+;
+
+SELECT
+    dno 부서번호, sumSal 급여합계, TRUNC(avgSal, 2) 평균급여, 
+    maxSal 최대급여, minSal 최소급여, cnt 사원수
+FROM
+    (
+        SELECT
+            deptno dno, SUM(sal) sumSal, AVG(sal) avgSal, 
+            MAX(sal) maxSal, MIN(sal) minSal, COUNT(*) cnt
+        FROM
+            emp
+        GROUP BY
+            deptno
+    )
+;
+
+--------------------------------------------------------------------------------
+/*
+    조인(JOIN)
+    ==> 두 개 이상의 테이블에서 원하는 데이터를 조회하는 방법
+    
+        데이터베이스 설계시 데이터의 무결성 확보를 위해서
+        테이블을 분리해서 만들어 놓았다.
+        이때 분리된 데이터를 합쳐서 조회해야 하는 경우가 발생할 수 있다.
+        그때 분리된 데이터를 가져오는 방법이다.
+        
+        형식 ]
+            SELECT
+                컬럼이름들...
+            FROM
+                테이블1, 테이블2, ...
+            WHERE
+                조인조건식1
+                AND 조인조건식2
+                ...
+            ;
+*/
+
+CREATE TABLE ecolor (
+    cno NUMBER(5) 
+        CONSTRAINT ECOLOR_NO_PK PRIMARY KEY,
+    ecname VARCHAR2(20 CHAR)
+        CONSTRAINT ECOLOR_NAME_UK UNIQUE
+        CONSTRAINT ECOLOR_NAME_NN NOT NULL,
+    code CHAR(7)
+        CONSTRAINT ECOLOR_CODE_UK UNIQUE
+        CONSTRAINT ECOLOR_CODE_NN NOT NULL
+);
+
+
+CREATE TABLE kcolor (
+    cno NUMBER(5) 
+        CONSTRAINT KCOLOR_NO_PK PRIMARY KEY,
+    kcname VARCHAR2(20 CHAR)
+        CONSTRAINT KCOLOR_NAME_UK UNIQUE
+        CONSTRAINT KCOLOR_NAME_NN NOT NULL,
+    code CHAR(7)
+        CONSTRAINT KCOLOR_CODE_UK UNIQUE
+        CONSTRAINT KCOLOR_CODE_NN NOT NULL
+);
+
+INSERT INTO 
+    ecolor
+VALUES(
+    10, 'RED', '#FF0000'
+);
+
+INSERT INTO 
+    ecolor
+VALUES(
+    20, 'GREEN', '#00FF00'
+);
+
+INSERT INTO 
+    ecolor
+VALUES(
+    30, 'BLUE', '#0000FF'
+);
+
+
+INSERT INTO 
+    kcolor
+VALUES(
+    10, '빨강', '#FF0000'
+);
+
+INSERT INTO 
+    kcolor
+VALUES(
+    20, '초록', '#00FF00'
+);
+
+INSERT INTO 
+    kcolor
+VALUES(
+    30, '파랑', '#0000FF'
+);
+
+commit;
