@@ -247,7 +247,44 @@ FROM
                 AND 조인조건식2
                 ...
             ;
+            
+        오라클은 관계형 데이터베이스이다.
+        관계형 데이터베이스는 엔티티 간의 관계를 형성해서 데이터를 보관하는 데이터베이스이다.
+        
+        그래서 분리된 엔티티들에서 데이터를 꺼내오면
+        컴퓨터는 어떤 데이터가 연결되어있는 데이터인지를 알 수 없으므로
+        모든 가능한 조합을 만들어서 조회가 된다.
+        이 조회된 모든 가능한 조합의 결과를 Cartesian Product(데카르트 곱)이라고 한다.
+        이런 조인을 
+            Cross Join
+        이라고 부른다.
+        
+    조인의 종류 ]
+        Cross Join
+        ==> Cartesian Product 를 조회하는 조인
+            일반적으로 사용하지 않는 조인
+            
+        Inner Join
+        ==> Cartesian Product 내에서 걸러내서 하는 조인
+        
+        Outer Join
+        ==> Cartesian Product 내에 없는 데이터를 조회하는 조인
+        
+        EQUI JOIN
+        ==> 조인 조건을 동등비교연산으로 처리하는 조인
+        
+        NON EQUI JOIN
+        ==> 조인 조건이 동등비교연산이 아닌 조인
+        
+        SELF JOIN
+        ==> 조인을 할 때 같은 테이블을 두번이상 이용해서 하는 조인
+        
+    참고 ]
+        조인할 때 WHERE절에 조인 조건 이외의 다른 일반조건을 기술할 수 있다.
+        
 */
+
+-------------------------------------------------------------------------------
 
 CREATE TABLE ecolor (
     cno NUMBER(5) 
@@ -310,3 +347,45 @@ VALUES(
 );
 
 commit;
+
+--------------------------------------------------------------------------------
+SELECT
+    *
+FROM
+    ecolor e, kcolor k
+;
+
+SELECT
+    *
+FROM
+    ecolor e, kcolor k
+WHERE
+    e.cno = k.cno
+;
+
+SELECT
+    e.cno 칼라번호, ecname 영문칼라이름, 
+    kcname 한글칼라이름, k.code 칼라코드
+FROM
+    ecolor e, kcolor k
+WHERE
+    e.cno = k.cno -- 조인조건. INNER JOIN, EQUI JOIN
+;
+
+-- 사원들의 사원이름, 직급, 부서이름 을 조회하세요.
+SELECT
+    ename, job, e.deptno, d.deptno, dname
+FROM
+    emp e, dept d
+;
+
+SELECT
+    ename, job, e.deptno, d.deptno, dname
+FROM
+    emp e, dept d
+WHERE
+    e.deptno = d.deptno
+;
+
+-- 일반조건과 같이 사용할 수 있다.
+-- 81년 입사한 사원의 사원이름, 직급, 입사년도, 부서위치를 조회하세요.
