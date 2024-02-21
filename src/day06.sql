@@ -389,3 +389,155 @@ WHERE
 
 -- 일반조건과 같이 사용할 수 있다.
 -- 81년 입사한 사원의 사원이름, 직급, 입사년도, 부서위치를 조회하세요.
+SELECT
+    ename 사원이름, job 직급, TO_CHAR(hiredate, 'YYYY') 입사년도, loc 부서위치
+FROM
+    emp e, dept d
+WHERE
+    -- 조인조건
+    e.deptno = d.deptno
+    AND TO_CHAR(hiredate, 'YY') = '81'
+;
+
+-- NON EQUI JOIN - 조인조건에 사용하는 연산자가 대소비교를 하는 경우
+-- 사원들의 사원이름, 직급, 급여, 급여등급 을 조회하세요.
+SELECT
+    ename, job, sal, losal, hisal, grade
+FROM
+    emp, salgrade
+;
+
+SELECT
+    ename, job, sal, losal, hisal, grade
+FROM
+    emp, salgrade
+WHERE
+    -- 조인조건
+    sal >= losal
+    AND sal <= hisal
+;
+
+SELECT
+    ename 사원이름, job 직급, sal 급여, grade 급여등급
+FROM
+    emp, salgrade
+WHERE
+    -- 조인조건
+--    sal >= losal AND sal <= hisal
+    sal BETWEEN losal AND hisal
+;
+
+-- 여러개의 조인을 동시에 적용해서 조회할 수 있다.
+/*
+    사원들의
+        사원이름, 직급, 급여, 부서번호, 부서이름, 급여등급
+    을 조회하세요.
+*/
+SELECT
+    ename, job, sal, d.deptno, dname, grade, losal, hisal
+FROM
+    emp e, dept d, salgrade
+WHERE
+    -- 사원정보와 부서정보 조인
+    e.deptno = d.deptno
+    -- 위까지 결과와 급여등급정보 조인
+    AND sal BETWEEN losal AND hisal
+;
+
+-- 30번 부서 사원들의 사원이름, 직급, 부서위치, 급여, 급여등급을 조회하세요.
+SELECT
+    ename 사원이름, job 직급, loc 부서위치, sal 급여, grade 급여등급
+FROM
+    emp e, dept d, salgrade
+WHERE
+    -- 급여등급과 사원정보 조인
+    sal BETWEEN losal AND hisal
+    -- 위 결과와 부서정보 조인
+    AND e.deptno = d.deptno
+    
+    -- 일반조건
+    AND e.deptno = 30
+;
+
+-- SELF JOIN
+-- 사원들의 사원이름, 직급, 상사번호, 상사이름 을 조회하세요.
+
+-- 서브질의로 처리하는 방법
+SELECT
+    ename 사원이름, job 직급, mgr 상사번호, 
+    (
+        SELECT
+            ename
+        FROM
+            emp
+        WHERE
+            empno = e.mgr
+    ) 상사이름
+FROM
+    emp e
+;
+
+-- 조인을 이용하는 방법
+SELECT
+    e.ename 사원이름, e.job 직급, e.mgr 상사번호, s.empno, s.ename 상사이름
+FROM
+    emp e, -- 사원정보테이블
+    emp s -- 상사정보테이블
+WHERE
+    e.mgr = s.empno
+;
+
+-- 여기까지가 모두 INNER JOIN
+--------------------------------------------------------------------------------
+
+-- OUTER JOIN : Cartesian Product 내에 없는 데이터를 조인하는 방법
+-- 형식 ] null 로 표현되어야 할 테이블 컬럼에 "(+)" 를 붙여준다.
+SELECT
+    e.ename 사원이름, e.job 직급, e.mgr 상사번호, s.empno, NVL(s.ename, '상사없음') 상사이름
+FROM
+    emp e, -- 사원정보테이블
+    emp s -- 상사정보테이블
+WHERE
+    e.mgr = s.empno(+)
+;
+
+SELECT
+    e.ename 사원이름, e.job 직급, e.mgr 상사번호, s.empno, NVL(s.ename, '상사없음') 상사이름
+FROM
+    emp e, -- 사원정보테이블
+    emp s -- 상사정보테이블
+WHERE
+    e.mgr(+) = s.empno
+; -- 사원들의 정보와 상사가 아닌 사원도 조회
+
+/*
+    사원들의
+        사원이름, 직급, 입사년도, 부서번호, 부서이름, 급여, 급여등급, 
+        상사이름, 상사직급, 상사급여
+    을 조회하세요. 
+    단, 82년 입사한 사원만 조회하세요.
+*/
+
+SELECT
+    e.ename 사원이름, e.job 직급, TO_CHAR(e.hiredate, 'YYYY') 입사년도, 
+    e.deptno 부서번호, dname 부서이름, e.sal 급여, grade 급여등급, 
+    s.ename 상사이름, s.job 상사직급, s.sal 상사급여
+FROM
+    emp e, -- 사원정보
+    dept d, salgrade, 
+    emp s -- 상사정보
+WHERE
+    e.mgr = s.empno(+)
+    AND e.sal BETWEEN losal AND hisal
+    AND e.deptno = d.deptno
+    -- 일반조건
+    AND TO_CHAR(e.hiredate, 'YYYY') = '1982'
+;
+
+
+
+
+
+
+
+
