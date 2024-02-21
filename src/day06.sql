@@ -534,6 +534,28 @@ WHERE
     AND TO_CHAR(e.hiredate, 'YYYY') = '1982'
 ;
 
+--------------------------------------------------------------------------------
+/*
+    인라인 뷰도 조인에 사용할 수 있다.
+*/
+
+-- 사원들의 사원이름, 직급, 급여, 부서번호, 부서최대급여, 부서원수 를 조회하세요.
+SELECT
+    ename 사원이름, job 직급, sal 급여, 
+    deptno 부서번호, max 부서최대급여, cnt 부서원수
+FROM
+    emp,
+    (
+        SELECT
+            deptno dno, MAX(sal) max, COUNT(*) CNT
+        FROM
+            emp
+        GROUP BY
+            deptno
+    )
+WHERE
+    deptno = dno
+;
 
 
 
