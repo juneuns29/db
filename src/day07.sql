@@ -482,6 +482,7 @@ ROLLBACK;
                     조건식   
             ;
 */
+-- emp 테이블의 SCOTT의 정보를 tmp 테이블에 입력하세요.
 INSERT INTO 
     tmp
 SELECT
@@ -493,3 +494,33 @@ WHERE
 ;
 
 -- tmp 테이블의 1000 사원의 직급을 '선생님'으로 변경하세요.
+UPDATE
+    tmp
+SET
+    job = '선생님'
+WHERE
+    empno = 1000
+;
+
+commit;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
