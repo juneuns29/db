@@ -244,7 +244,7 @@ INSERT INTO
 VALUES(
     1000,
     '전은석', 'euns', '12345', 
-    'euns@human.com', '010-3175-9042', 'M', 12,
+    'euns@human.com', '010-0000-0000', 'M', 12,
     sysdate
 );
 
