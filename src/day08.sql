@@ -250,13 +250,66 @@ VALUES(
 
 commit;
 
+/*
+DROP TABLE board;
 CREATE TABLE board(
-    
+    -- 채워주세요...!
+    bno NUMBER(6) NOT NULL,
+    title VARCHAR2(50 CHAR) NOT NULL,
+    body VARCHAR2(4000) NOT NULL,
+    writer NUMBER(4) NOT NULL,
+    wdate DATE DEFAULT sysdate,
+    views NUMBER(5) NOT NULL,
+    isshow CHAR(1)
 );
 
 
+ALTER TABLE board
+MODIFY isshow CHAR(1) DEFAULT 'Y'
+    CONSTRAINT BRD_SHOW_CK CHECK(isshow IN('Y', 'N'))
+    CONSTRAINT BRD_SHOW_NN NOT NULL
+;
+
+ALTER TABLE board
+ADD CONSTRAINT
+    BRD_NO_PK PRIMARY KEY(bno)
+;
+
+ALTER TABLE board
+ADD CONSTRAINT
+    BRD_MNO_FK FOREIGN KEY(writer) REFERENCES member(mno)
+;
 
 
+ALTER TABLE board
+MODIFY writer NUMBER(4)
+    CONSTRAINT BRD_MNO_NN NOT NULL; 
+-- ==> 이미 추가되어 있어서 에러...
+
+-- 제약조건 이름 변경
+ALTER TABLE BOARD
+RENAME CONSTRAINT SYS_C007029 TO BRD_MNO_NN;
+
+*/
+
+CREATE TABLE board(
+    bno NUMBER(6)
+        CONSTRAINT BRD_NO_PK PRIMARY KEY,
+    title VARCHAR2(50 CHAR)
+        CONSTRAINT BRD_TITLE_NN NOT NULL,
+    body VARCHAR2(4000)
+        CONSTRAINT BRD_BD_NN NOT NULL,
+    writer NUMBER(4)
+        CONSTRAINT BRD_MNO_FK REFERENCES member(mno)
+        CONSTRAINT BRD_MNO_NN NOT NULL,
+    wdate DATE DEFAULT sysdate
+        CONSTRAINT BRD_DATE_NN NOT NULL,
+    views NUMBER(5) DEFAULT 0
+        CONSTRAINT BRD_VIEW_NN NOT NULL,
+    isshow CHAR(1) DEFAULT 'Y'
+        CONSTRAINT BRD_SHOW_CK CHECK (isshow IN ('Y', 'N'))
+        CONSTRAINT BRD_SHOW_NN NOT NULL
+);
 
 
 
