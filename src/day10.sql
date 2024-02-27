@@ -200,6 +200,33 @@
                 부여방법 ]
                     
                      GRANT 롤이름, 롤이름, ... TO 계정이름;
+                     
+            2. 사용자가 롤을 만들어서 적용시키는 방법
+                ==> 롤안에 그 롤에 필요한 권한들을 사용자가 지정한 후
+                    그 롤을 이용해서 권한을 부여하고
+                    사용자가 사용하는 방법
+                    
+                순서가 중요하니 순서를 기억하세요.
+                
+                1. 롤을 만든다.
+                    
+                    CREATE ROLE 롤이름;
+                
+                2. 롤에 권한을 부여한다.
+                
+                    GRANT 권한이름, 권한이름, .. TO 롤이름;
+                    
+                3. 롤을 이용해서 계정에게 권한 부여
+                    
+                    GRANT 롤이름 TO 계정이름;
+                    
+        사용자 정의 롤 삭제하기
+            DROP ROLE 롤이름;
+            
+        다른계정이 소유한 테이블 조회권한 부여하기
+            
+            GRANT SELECT ON 다른계정이름.테이블이름 TO 계정이름;
+                    
 */
 
 -- 관리자 계정으로 실행
@@ -222,16 +249,112 @@ REVOKE CREATE TABLE FROM jennie;
 -- jennie 계정에게 CONNECT, RESOURCE 롤을 이용해서 권한을 부여
 GRANT CONNECT, RESOURCE TO jennie;
 
+-- TEST 계정을 만든다.
+CREATE USER test IDENTIFIED BY 12345 ACCOUNT UNLOCK;
+GRANT UNLIMITED TABLESPACE TO test;
+ALTER USER test DEFAULT TABLESPACE USERS;
+ALTER USER test TEMPORARY TABLESPACE TEMP;
+
+-- 1. ROLE1 롤을 만든다.
+CREATE ROLE role1;
+-- role1에 권한 부여
+GRANT CREATE SESSION, CREATE TABLE TO role1;
+
+-- 롤을 이용해서 test계정에 권한 부여
+GRANT ROLE1 TO test;
+
+-- ROLE1 삭제
+DROP ROLE role1;
+
+-- myrole 만들기
+CREATE ROLE myrole;
+
+-- 롤에 권한 주기
+GRANT CONNECT, RESOURCE TO myrole;
+
+-- 롤을 이용해서 권한 부여
+GRANT myrole TO test;
+
+-- 실습용 계정 삭제하기 : 관리자계정에서 해야한다.
+DROP USER test CASCADE; -- 강제 계정삭제
+
+-- jennie 계정에게 scott 계정이 소유한  emp 테이블을 조회할 수 있는 권한 부여
+
+GRANT SELECT ON scott.emp TO jennie;
+GRANT SELECT ON scott.dept TO jennie;
+GRANT SELECT ON scott.salgrade TO jennie;
+GRANT SELECT ON scott.bonus TO jennie;
+
+-- 모든 계정의 테이블을 조회할 수 있는 권한 부여
+-- SELECT ANY TABLE
+GRANT SELECT ANY TABLE TO jennie;
+
+/*
+    동의어(Synonym)
+    ==> 테이블 자체에 별칭을 부여해서 
+        여러 사용자가 각각의 이름으로 하나의 테이블을 사용하도록 하는 방법
+        
+        즉, 실제 객체(테이블, 뷰, 시퀀스, 프로시저, ..) 이름은 감추고
+        사용자에게는 별칭을 부여해서
+        객체를 보호하는 방법
+        
+        형식 ]
+            CREATE [PUBLIC] SYNONYM 별칭이름 FOR 실제이름;
+            
+            PUBLIC 이 생략되면 이 동의어는 같은 계정에서만 사용하는 동의어가 된다.
+            PUBLIC 이 추가되면 자동적으로 다른 계정에서도
+            이 동의어를 잉요해서 테이블에 접근할 수 있게된다.
+*/
+
+-- 권한 부여
+GRANT CREATE SYNONYM TO jennie;
+GRANT CREATE PUBLIC SYNONYM TO jennie;
+
+-- scott 계정에게 hr계정이 소유한  employees 테이블을 조회할 수 있는 권한 부여
+GRANT SELECT ON hr.employees TO scott;
+
+--------------------------------------------------------------------------------
+/*
+    View
+    Sequence
+    Trigger
+*/
 
 
+/*
+    View
+    ==> 질의명령의 결과를 하나의 창문으로 바라볼 수 있는 것.
+        
+        테이블처럼 사용할 수 있지만
+        테이블과 다른점은
+        물리적으로 데이터베이스에 컬럼으로 저장되지 않은 점.(링크와 같은 개념)
+        
+        ==> 자주 사용되는 복잡한 질의명령을 미리 저장해 놓고
+            이 질의명령의 결과를 손쉽게 테이블처럼 사용할 수 있게 되는 것.
+            
+        뷰의 종류
+            1. 단순뷰
+            ==> 하나의 테이블을 이용해서 컬럼들을 조회하는 결과로 뷰를 만드는 경우
+            
+            2. 복합뷰
+            ==> 1) 조인으로 조회한 결과로 뷰를 만드는 경우
+                2) 그룹함수를 이용해서 조회한 결과로 뷰를 만드는 경우
+                
+            원칙적으로 뷰를 통해서 테이블의 데이터를 수정할 수 있는 것은
+            단순뷰에서만 가능하다.
+            
+        형식 ]
+            
+            CREATE VIEW  뷰이름
+            AS
+                조회질의명령
+            ;
+*/
 
 
-
-
-
-
-
-
+--------------------------------------------------------------------------------
+-- 뷰 생성 권한 부여
+GRANT CREATE VIEW TO jennie;
 
 
 
