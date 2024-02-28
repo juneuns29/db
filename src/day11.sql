@@ -452,3 +452,121 @@ VALUES
     (mnoseq.NEXTVAL, '지수', 'JISOO', 12345, 
         'jisoo@human.com', '010-2626-2626', 'F', 23, sysdate, 'Y')
 ;
+
+
+-- Member 테이블 제약조건 추가
+ALTER TABLE member
+ADD CONSTRAINT
+    MB_NO_PK PRIMARY KEY(mno);
+
+ALTER TABLE member
+ADD CONSTRAINT
+    MB_ID_UK UNIQUE(id);
+
+
+ALTER TABLE member
+ADD CONSTRAINT
+    MB_MAIL_UK UNIQUE(mail);
+
+
+ALTER TABLE member
+ADD CONSTRAINT
+    MB_TEL_UK UNIQUE(tel);
+
+-- 댓글게시판 제작
+CREATE TABLE reboard(
+    rebno NUMBER(6)
+        CONSTRAINT RBRD_NO_PK PRIMARY KEY,
+    body VARCHAR2(4000)
+        CONSTRAINT RBRD_BD_NN NOT NULL,
+    writer NUMBER(4)
+        CONSTRAINT RBRD_MNO_FK REFERENCES member(mno)
+        CONSTRAINT RBRD_MNO_NN NOT NULL,
+    wdate DATE DEFAULT SYSDATE
+        CONSTRAINT RBRD_DATE_NN NOT NULL,
+    upno NUMBER(6),
+    isshow CHAR(1) DEFAULT 'Y'
+        CONSTRAINT RBRD_SHOW_CK CHECK(isshow IN('Y', 'N'))
+        CONSTRAINT RBRD_SHOW_NN NOT NULL
+);
+
+-- 댓글게시판 전용 시퀀스
+CREATE SEQUENCE rbseq
+    START WITH 1001
+    MAXVALUE 999999
+    NOCYCLE
+;
+
+-- 데이터 입력
+-- 원글 입력
+INSERT INTO
+    reboard(rebno, body, writer)
+VALUES(
+    rbseq.NEXTVAL, '댓글게시판 오픈 합니다. 많은 이용부탁합니다.', 1000
+);
+
+
+INSERT INTO
+    reboard(rebno, body, writer)
+VALUES(
+    rbseq.NEXTVAL, '게시판 오픈 축하합니다. 번창하세요!', 1001
+);
+
+
+INSERT INTO
+    reboard(rebno, body, writer)
+VALUES(
+    rbseq.NEXTVAL, '축하!축하!', 1002
+);
+
+
+INSERT INTO
+    reboard(rebno, body, writer, upno)
+VALUES(
+    rbseq.NEXTVAL, '다녀갑니다. 게시판 번창하세요!', 1005, 1001
+);
+
+
+INSERT INTO
+    reboard(rebno, body, writer, upno)
+VALUES(
+    rbseq.NEXTVAL, '나두 왔다갔어~~!', 1005, 1002
+);
+
+
+INSERT INTO
+    reboard(rebno, body, writer, upno)
+VALUES(
+    rbseq.NEXTVAL, '너 누구냐???', 1003, 1003
+);
+
+
+INSERT INTO
+    reboard(rebno, body, writer, upno)
+VALUES(
+    rbseq.NEXTVAL, '너 누구냐???', 1003, 1004
+);
+
+
+INSERT INTO
+    reboard(rebno, body, writer, upno)
+VALUES(
+    rbseq.NEXTVAL, '뭥미???', 1004, 1007
+);
+
+commit;
+
+-- 댓글들을 계층으로 조회하세요.
+SELECT
+    LPAD(' ', (LEVEL - 1) * 10, ' ') || id || ' - ' || rebno || 
+    ' | ' || TO_CHAR(wdate, 'YYYY"년" MM"월" DD"일" HH24:MI:SS') || ' - ' || body 게시글
+FROM
+    reboard r, member m
+WHERE
+    writer = mno
+START WITH
+    upno IS NULL
+CONNECT BY
+    PRIOR rebno = upno
+ORDER SIBLINGS BY wdate
+;
