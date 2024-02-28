@@ -392,3 +392,63 @@ CONNECT BY
 ORDER SIBLINGS BY
     ename
 ;
+
+SELECT
+    LEVEL || ' ' || 
+    CONCAT(
+        LPAD('-', (LEVEL - 1) * 5, '-'),
+        ename
+    ) || ' : ' || 
+    job 사원정보
+FROM
+    emp
+START WITH
+    mgr IS NULL
+CONNECT BY
+    prior empno = mgr
+;
+
+--------------------------------------------------------------------------------
+CREATE TABLE member
+AS
+    SELECT
+        *
+    FROM
+        scott.member
+;
+
+-- 회원번호 시퀀스 생성
+CREATE SEQUENCE mnoSeq
+    START WITH 1002
+    MAXVALUE 9999
+    NOCYCLE
+;
+
+-- 회원 '쵸파', '리사', '로제', '지수'를 추가하세요.
+INSERT INTO 
+    member(mno, name, id, pw, mail, tel, gen, avatar, joindate, isshow)
+VALUES
+    (mnoseq.NEXTVAL, '쵸파', 'CHOPPA', 12345, 
+        'choppa@human.com', '010-5858-5858', 'M', 11, sysdate, 'Y')
+;
+        
+INSERT INTO 
+    member(mno, name, id, pw, mail, tel, gen, avatar, joindate, isshow)
+VALUES
+    (mnoseq.NEXTVAL, '리사', 'LISA', 12345, 
+        'lisa@human.com', '010-2424-2424', 'F', 22, sysdate, 'Y')
+;
+        
+INSERT INTO 
+    member(mno, name, id, pw, mail, tel, gen, avatar, joindate, isshow)
+VALUES
+    (mnoseq.NEXTVAL, '로제', 'ROSE', 12345, 
+        'rose@human.com', '010-5454-5454', 'F', 22, sysdate, 'Y')
+;
+        
+INSERT INTO 
+    member(mno, name, id, pw, mail, tel, gen, avatar, joindate, isshow)
+VALUES
+    (mnoseq.NEXTVAL, '지수', 'JISOO', 12345, 
+        'jisoo@human.com', '010-2626-2626', 'F', 23, sysdate, 'Y')
+;
