@@ -558,8 +558,8 @@ commit;
 
 -- 댓글들을 계층으로 조회하세요.
 SELECT
-    LPAD(' ', (LEVEL - 1) * 10, ' ') || id || ' - ' || rebno || 
-    ' | ' || TO_CHAR(wdate, 'YYYY"년" MM"월" DD"일" HH24:MI:SS') || ' - ' || body 게시글
+    '* ' || LPAD(' ', (LEVEL - 1) * 10, ' ') || id || ' - ' || rebno || 
+    ' | ' || TO_CHAR(wdate, 'YYYY"년" MM"월" DD"일" HH24:MI:SS') 글정보, body 글내용
 FROM
     reboard r, member m
 WHERE
@@ -570,3 +570,4 @@ CONNECT BY
     PRIOR rebno = upno
 ORDER SIBLINGS BY wdate
 ;
+
