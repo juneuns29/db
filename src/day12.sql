@@ -316,15 +316,79 @@ rollback;
 
 --------------------------------------------------------------------------------
 
+-- 사원이 입사하면 사원의 누적 지급 급여를 기억할 테이블에
+-- 해당 사원이 정보가 추가되도록 
+-- 트리거를 작성하고 실행하세요.
 
+-- 사원들의 누적 급여 테이블
+CREATE TABLE sumsal(
+    eno NUMBER(7,2)
+        CONSTRAINT SSAL_NO_PK PRIMARY KEY,
+    hap NUMBER(9,2) DEFAULT 0 -- 누적급여 초기값
+        CONSTRAINT SSAL_HAP_NN NOT NULL,
+    udate DATE DEFAULT sysdate
+        CONSTRAINT SSAL_DATE_NN NOT NULL
+);
 
+-- 트리거 생성
+CREATE OR REPLACE TRIGGER salUp
+    AFTER INSERT
+ON 
+    temp
+FOR EACH ROW
+BEGIN
+    INSERT INTO
+        sumsal(eno)
+    VALUES(
+        :NEW.empno
+    );
+    
+    DBMS_OUTPUT.PUT_LINE(:NEW.ENAME || ' 사원이 입사했습니다.');
+END;
+/
 
+/*
+    CHOPPA 사원을
+        사원번호: 8000
+        이름 : CHOPPA
+        직급 : DOCTOR
+        상사번호 : 7839
+        입사일 : 오늘 0시0분0초
+        급여 : 1000
+        커미션 : 없음
+        부서번호 : 40
+    으로 추가하세요.
 
+*/
 
+INSERT INTO
+    temp
+VALUES(
+    8000, 'CHOPPA', 'DOCTOR', 7839, 
+    TO_DATE(TO_CHAR(sysdate, 'yyyy/mm/dd')),
+    1000, NULL, 40
+);
 
+INSERT INTO
+    temp
+VALUES(
+    8001, 'BOA HANKOK', 'DUMOK', 8000, 
+    TO_DATE(TO_CHAR(sysdate, 'yyyy/mm/dd')),
+    1500, 1000, 40
+);
 
+--------------------------------------------------------------------------------
 
+/*
+    jennie 계정에 복사된
+    
+        EMP, DEPT, SALGRADE
+    테이블들의 제약조건을 추가하세요.
+    
+*/
 
+ALTER TABLE member
+RENAME CONSTRAINT SYS_C007086 TO MB_NAME_NN;
 
 
 

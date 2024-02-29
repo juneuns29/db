@@ -135,7 +135,8 @@ ORDER BY
             
         컬럼 길이 변경 ]
             ALTER TABLE 테이블이름
-            MODIFY 컬럼이름 데이터타입(길이);
+            MODIFY 컬럼이름 데이터타입(길이)
+                CONSTRAINT 제약조건이름 NOT NULL;
             
         컬럼 삭제하기
             ALTER TABLE 테이블이름
@@ -145,6 +146,9 @@ ORDER BY
             ALTER TABLE 테이블이름
             ADD CONSTRAINT 제약조건이름 제약조건(컬럼이름) 나머지구문;
             
+        제약조건 이름변경
+            ALTER TABLE 테이블이름
+            RENAME CONSTRAINT 지금이름 TO 바뀔이름;
     ----------------------------------------------------------------------------
     테이블 삭제
     ==> 테이블 안의 모든 데이터도 같이 삭제된다.
